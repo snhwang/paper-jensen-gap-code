@@ -1,0 +1,11 @@
+# data and outputs are not tracked here (HCP-A is access-restricted)
+*.nii
+*.nii.gz
+*.csv
+*.tsv
+HCP/
+tbss_age_*/
+figures/
+__pycache__/
+*.pyc
+.venv*/

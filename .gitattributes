@@ -1,0 +1,4 @@
+# Shell scripts here are deployed to a Linux compute cluster; CRLF line endings
+# would break the shebang (bad interpreter: /usr/bin/env bash^M). Force LF.
+*.sh text eol=lf
+*.py text eol=lf
