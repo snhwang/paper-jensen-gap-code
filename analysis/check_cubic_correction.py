@@ -24,9 +24,14 @@ Output: printed table.
 import numpy as np
 import nibabel as nib
 
-import batch_jf_hcp as bj
+import sys
+from pathlib import Path
 
-import os
+# batch_jf_hcp lives in gap_computation/; reuse its constants and direction
+# matching so this measures the pipeline that produces the published maps.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "gap_computation"))
+import batch_jf_hcp as bj  # noqa: E402
+
 SESSION = "session_20260222_031250"
 SHELL = bj.B1  # b = 1500, the shell the manuscript quotes CV_D for
 

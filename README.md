@@ -203,6 +203,9 @@ python analysis/headline_significance.py            # cross-sectional + spectrum
 python analysis/gap_fa_correlation.py               # gap vs FA, spatial + across-subject
 python analysis/jf_age_association.py               # J_f vs age, 16 ROIs, vs Delta_b J_ln
 python analysis/jf_split_half_reliability.py        # voxelwise reliability of both indices
+python analysis/jf_motion_site_robustness.py        # J_f adjusted for motion, site, eddy outliers
+python analysis/check_cubic_correction.py           # accuracy of the small-gap expansion
+python analysis/age_topcode_sensitivity.py          # effect of top-coding age at 90
 JG_DATA=/path/to/tree python analysis/reproduce_stats.py   # SELF-TEST: verify every scalar vs the paper
 JG_DATA=/path/to/tree HCPA_ZIP_GLOB="H:/HCA*_DiffusionRecommended.zip" \
   python analysis/motion_robustness.py                     # Sec 7.1 motion+site+outlier robustness, both shells
@@ -232,7 +235,8 @@ script.
 The `analysis/` scripts instead take the data root from the **`JG_DATA`**
 environment variable (`reproduce_stats.py`, `headline_significance.py`,
 `gap_fa_correlation.py`, `motion_robustness.py`, `tbss_map_stats.py`,
-`jf_age_association.py`, `jf_split_half_reliability.py`). `JG_DATA` is also
+`jf_age_association.py`, `jf_split_half_reliability.py`,
+`jf_motion_site_robustness.py`, `age_topcode_sensitivity.py`). `JG_DATA` is also
 honoured by `figure_scripts/build_gaussianity_map_figure.py`, which additionally
 reads the raw DWI through `DTI_OUTPUT_DIR`.
 `motion_robustness.py` additionally uses `HCPA_ZIP_GLOB` (the raw HCP-A eddy-log
