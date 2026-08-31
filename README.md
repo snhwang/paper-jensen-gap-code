@@ -135,6 +135,10 @@ Text2Vest HCP/design_agesex_b1500.txt HCP/design_agesex_b1500.mat   # FSL: text 
 Text2Vest HCP/contrast_agesex.txt     HCP/design_agesex.con
 bash tbss_pipeline/_deploy_agesex.sh 1500 <host>          # ship 4D + design (run in WSL)
 bash tbss_pipeline/dgx_randomise_agesex_n1379.sh 1500     # randomise: 5000 perms, TFCE, FWE
+bash tbss_pipeline/run_tbss_fill.sh 1500                  # display thickening for the figures
+#    standard FSL tbss_fill at threshold 0.95, applied after masking the corrp
+#    map to the screened skeleton. DISPLAY ONLY: reported percentages come from
+#    the unthickened result.
 # 4. (robustness) FULL 10-EV confound-adjusted design; maps near-identical (Dice 0.98-1.00):
 python analysis/motion_robustness.py                      # writes HCP/quality_{,b3000_}n1379.csv
 python tbss_pipeline/build_design_full.py                 # design_full_b{bval}.txt / contrast_full.txt
@@ -223,6 +227,29 @@ as age 90 via `clean_age()` and retained (N = 1,379), matching the paper.
 `tbss_map_stats.py` covers the map-derived scalars: the full-vs-sex-adjusted Dice
 (0.98-1.00) and the corona-radiata positive-to-negative voxel ratios (signal gap
 ~1.2:1, FA ~0.45:1 at b=1500).
+
+## Which script reproduces which claim
+
+| Claim in the paper | Script |
+|---|---|
+| Gap definitions, Holder ladder, ROI tables | `gap_computation/batch_gaps_hcp.py` |
+| Cross-sectional and longitudinal age associations, gap spectrum, FA comparisons | `analysis/reproduce_stats.py` (self-test, exits non-zero on mismatch) |
+| Motion / site / eddy-outlier robustness of the gap correlations | `analysis/motion_robustness.py` |
+| Voxelwise TBSS scalars (percentages, Dice) | `analysis/tbss_map_stats.py` |
+| Gap vs FA collinearity | `analysis/gap_fa_correlation.py` |
+| Attenuation gap J_f, cohort values | `gap_computation/batch_jf_hcp.py` |
+| J_f vs age across 16 ROIs | `analysis/jf_age_association.py` |
+| Split-half reliability of J_f and Delta_b J_ln | `analysis/jf_split_half_reliability.py` |
+| J_f adjusted for motion, site, eddy outliers | `analysis/jf_motion_site_robustness.py` |
+| Accuracy of the small-gap expansion | `analysis/check_cubic_correction.py` |
+| Effect of top-coding age at 90 | `analysis/age_topcode_sensitivity.py` |
+| Figures 1-9 | `figure_scripts/` (one script per figure) |
+
+Every script reads only derived tables and per-session preprocessing output. No
+participant identifiers appear in this repository, and no source or
+participant-linked data are redistributed here, per the AABC / HCP-A Data Use
+Terms. The example participant is referred to throughout by an anonymised
+session label.
 
 ## Paths and data root
 The figure and gap-computation scripts run from the analysis tree and use paths

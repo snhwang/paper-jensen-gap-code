@@ -1,4 +1,9 @@
-"""Reproduce and VERIFY every scalar statistic reported in the manuscript.
+"""Reproduce and VERIFY the ROI-level scalar statistics in the manuscript.
+
+    Covers the gap definitions, the cross-sectional and longitudinal age
+    associations, the gap spectrum and the FA comparisons. It does NOT cover the
+    attenuation gap J_f, the small-gap expansion accuracy or the age top-coding
+    sensitivity; each of those has its own script, listed in the README table.
 
 Each computed value is checked against the number quoted in the paper and marked
 [ OK ] or [FAIL]; the script exits non-zero if anything fails, so it doubles as a
