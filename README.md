@@ -210,6 +210,7 @@ python analysis/jf_split_half_reliability.py        # voxelwise reliability of b
 python analysis/jf_motion_site_robustness.py        # J_f adjusted for motion, site, eddy outliers
 python analysis/check_cubic_correction.py           # accuracy of the small-gap expansion
 python analysis/age_topcode_sensitivity.py          # effect of top-coding age at 90
+python analysis/check_angular_uniformity.py         # is the angular coverage isotropic enough
 JG_DATA=/path/to/tree python analysis/reproduce_stats.py   # SELF-TEST: verify every scalar vs the paper
 JG_DATA=/path/to/tree HCPA_ZIP_GLOB="H:/HCA*_DiffusionRecommended.zip" \
   python analysis/motion_robustness.py                     # Sec 7.1 motion+site+outlier robustness, both shells
@@ -243,6 +244,7 @@ as age 90 via `clean_age()` and retained (N = 1,379), matching the paper.
 | J_f adjusted for motion, site, eddy outliers | `analysis/jf_motion_site_robustness.py` |
 | Accuracy of the small-gap expansion | `analysis/check_cubic_correction.py` |
 | Effect of top-coding age at 90 | `analysis/age_topcode_sensitivity.py` |
+| Whether uniform directional weights are justified | `analysis/check_angular_uniformity.py` |
 | Figures 1-9 | `figure_scripts/` (one script per figure) |
 
 Every script reads only derived tables and per-session preprocessing output. No
