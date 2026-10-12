@@ -8,8 +8,9 @@ Rows (sex-adjusted partial r of each gap with age, corona radiata, both shells):
   4. the 16 sessions with a non-standard acquisition included (N = 1,370)
   5. the noise inflation of each gap (native_pass.py) subtracted per session
 
-Inputs:  config.HCP tables (cr_gaps_long.csv, v1_cohort.csv, AABC2 demographics),
-         out/v1_cohort_sessions.csv (v1_roi_stats.py), out/native_pass.csv
+Inputs:  config.HCP tables (cr_gaps_long.csv, AABC2 demographics),
+         out/v1_cohort_sessions.csv (v1_roi_stats.py), out/motion.csv
+         (motion_covariates.py), out/native_pass.csv
 Outputs: tables_supp/tab_sens.tex, out/sensitivity.csv
 Usage:   python sensitivity.py
 """
@@ -50,9 +51,7 @@ g = g.merge(sess).query("Visit == 'V1'").merge(
     dem[["Subject_ID", "Visit", "age", "top90", "sex", "site"]], on=["Subject_ID", "Visit"])
 g = g.dropna(subset=["age", "sex", "J_ln_D_mean", "J_ln_S_mean"])
 cohort = set(pd.read_csv(OUT / "v1_cohort_sessions.csv").Session_ID)
-mot = pd.read_csv(HCP / "v1_cohort.csv", usecols=["Subject_ID", "shell", "motion_rel",
-                                                  "outlier_frac"]).drop_duplicates(
-    ["Subject_ID", "shell"])
+mot = pd.read_csv(OUT / "motion.csv")   # the same for both shells
 nat = pd.read_csv(OUT / "native_pass.csv")
 nat = nat[nat.ROI == "CR_all"].copy()
 for gap in ("J_ln", "J_lnS"):
@@ -75,7 +74,7 @@ for b in (1500, 3000):
             a[top] = 90 + rng.exponential(2.5, top.sum())
             draws.append(partial_r(y, a, [male]))
         rows["top"][(b, gap)] = np.mean(draws)
-        q = s.merge(mot[mot.shell == b], on="Subject_ID").dropna(
+        q = s.merge(mot, on="Subject_ID").dropna(
             subset=["motion_rel", "outlier_frac", "site"])
         Z = pd.get_dummies(q[["sex", "site"]], drop_first=True).astype(float)
         rows["cov"][(b, gap)] = partial_r(q[col].values, q.age.values,
@@ -120,7 +119,7 @@ lines.append("largest change from main: " + ", ".join(
     f"{k} {max(abs(r[key] - main[key]) for key in main):.3f}" for k, r in rows.items()
     if k != "main"))
 m15 = g[(g.shell_bval == 1500) & g.Session_ID.isin(cohort)].merge(
-    mot[mot.shell == 1500], on="Subject_ID").dropna(subset=["motion_rel"])
+    mot, on="Subject_ID").dropna(subset=["motion_rel"])
 lines.append(f"head motion vs age (b=1500 sessions): r = "
              f"{np.corrcoef(m15.age, m15.motion_rel)[0, 1]:+.3f}, n = {len(m15)}")
 print("\n".join(lines[-2:]))

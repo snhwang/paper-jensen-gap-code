@@ -1,11 +1,12 @@
 """Rebuild every result, figure and table of the revision, in dependency order.
 
   python run_all.py              light steps only. Reuses the outputs of the slow
-                                 native passes already in out/ (minutes).
-  python run_all.py --heavy      also reruns the native passes (about 5 hours
-                                 locally, disk-bound). Delete out/*_partial.csv
-                                 first to start them from scratch, otherwise
-                                 they resume and skip sessions already done.
+                                 steps already in out/ (minutes).
+  python run_all.py --heavy      also reruns the steps that read the raw images
+                                 and zips (about 5 hours locally, disk-bound).
+                                 Delete out/*_partial.csv first to start the
+                                 native passes from scratch, otherwise they
+                                 resume and skip sessions already done.
   python run_all.py --list       lists the steps.
   python run_all.py --from NAME  starts at step NAME.
 
@@ -22,6 +23,8 @@ HERE = Path(__file__).resolve().parent
 STEPS = [
     ("cohort", ["v1_roi_stats.py"], False,
      "first-visit cohort; cross-sectional gaps, decomposition, b-dependence, spectrum"),
+    ("motion", ["motion_covariates.py"], True,
+     "head motion and eddy outlier fraction from the download zips"),
     ("native", ["native_pass.py"], True,
      "native pass over the 1,354 cohort sessions: gaps, tensor, noise simulation"),
     ("post_native", ["post_native.py"], False,

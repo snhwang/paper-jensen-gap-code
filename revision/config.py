@@ -10,6 +10,7 @@ all data are looked for under one data root:
   JG_MAPS      example-participant voxel maps written by example_maps.py
   JG_OLDMAPS   example-participant maps from the original pipeline
   JG_ATLAS     FSL/JHU atlases (JHU-ICBM-labels-1mm, FMRIB58_FA_1mm)
+  JG_ZIPS      the download zips (<Subject>_V1_MR_DiffusionRecommended.zip)
 
 Outputs are written inside this folder and are not committed:
   OUT          out/             intermediate tables and text summaries
@@ -33,6 +34,7 @@ DTI = Path(os.environ.get("JG_DTI", str(DATA / "dti_output")))
 MAPS = Path(os.environ.get("JG_MAPS", str(HCP / "voxel_maps_revision")))
 OLDMAPS = Path(os.environ.get("JG_OLDMAPS", str(HCP / "voxel_maps")))
 ATLAS = Path(os.environ.get("JG_ATLAS", str(DATA / "atlases")))
+ZIPS = Path(os.environ.get("JG_ZIPS", str(DATA / "zips")))
 
 OUT = HERE / "out"
 FIGS = ROOT / "figures"
