@@ -17,7 +17,16 @@ gap_computation/   raw DWI -> directional diffusivities -> Holder means -> gaps
 tbss_pipeline/      voxelwise TBSS (gap maps -> skeleton -> randomise; full + agesex designs)
 figure_scripts/     one script per manuscript figure
 analysis/           reported statistics
+revision/           the revised manuscript: every number, figure and table
 ```
+
+## Revised manuscript
+The `revision/` folder holds the analysis of the revised manuscript. Its scripts
+produce every number, figure and table of the revised text and supplement, and
+`revision/run_all.py` runs them in order. The revision uses the first visit of
+each participant (N = 1,354) and fits the tensor with DIPY. See
+`revision/README.md` for its inputs and for the script behind each result. The
+rest of this README describes the analysis of the earlier version.
 
 ## Setup
 

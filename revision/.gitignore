@@ -1,0 +1,5 @@
+# Outputs of the pipeline (derived from access-restricted data)
+out/
+figures/
+figures_supp/
+tables_supp/

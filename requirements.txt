@@ -4,4 +4,6 @@ scipy
 statsmodels
 matplotlib
 nibabel
+# revision/ uses DIPY for tensor fits and spherical harmonics (version 1.12 was used)
+dipy
 # TBSS pipeline (tbss_pipeline/) additionally requires an FSL install: randomise, fslmaths
