@@ -75,6 +75,12 @@ Figure PDFs are reproducible byte for byte. `config.py` fixes `SOURCE_DATE_EPOCH
 The native passes write a `*_partial.csv` as they go and resume from it if
 interrupted. Delete it to start over.
 
+`check_heavy_outputs.py [N]` reruns the first N sessions (default 3) of each
+stored slow output (`native_pass.csv`, `native_pass_long.csv`, `jf_pass.csv`)
+with the current scripts and compares every value. Run it after editing
+`native_pass.py` or `jf_pass.py`, to decide whether the slow passes must be
+rerun. It takes under a minute.
+
 ## Where each result comes from
 
 ### Main text
