@@ -83,7 +83,14 @@ interrupted. Delete it to start over.
 - `python check_heavy_outputs.py --paper ROOT`, after a complete
   `run_all.py --heavy`, compares every session of the slow outputs with those
   of the paper's source tree ROOT. It also requires the text summaries, the
-  supplementary tables and the figure PDFs to be identical byte for byte.
+  supplementary tables and the figure PDFs to have identical content. It
+  ignores only line endings, PDF compression and the sign of zero, which
+  differ between Windows and Linux builds.
+
+The public copy was rerun from scratch this way on 2026-10-14, on Linux
+(Ubuntu, Python 3.12, the same package versions as the paper's Windows run). Every session matched the paper's
+outputs to within 5e-11, and every summary, table and figure was identical in
+content.
 
 ## Where each result comes from
 

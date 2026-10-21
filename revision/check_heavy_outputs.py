@@ -13,7 +13,15 @@ outputs unless --heavy is given. Two modes:
       the paper's source tree, with figures/, figures_supp/, tables_supp/ and
       revision/analysis/out/. Compares every session and region of the slow
       outputs and motion.csv, and requires the text summaries (out/*.txt), the
-      supplementary tables and the figure PDFs to be identical byte for byte.
+      supplementary tables and the figure PDFs to have identical content.
+
+      Content is compared without three artefacts of the operating system and
+      Python build, which do not change what is printed or drawn:
+        - line endings (Windows writes CRLF, Linux LF),
+        - PDF stream compression (zlib builds differ, so every stream is
+          decompressed, and the stream lengths, the objects that store them
+          and the byte-offset table are ignored),
+        - the sign of zero in PDF coordinates ("-0" and "0" draw the same point).
 
 Files:   out/native_pass.csv, out/native_pass_long.csv, out/jf_pass.csv
 Both passes seed their noise per session, so a match should be exact up to
@@ -22,7 +30,9 @@ and is not compared. Exit code 1 if any value differs by more than 1e-9
 relative, if a session is in one set but not the other, or if any summary,
 table or figure differs.
 """
+import re
 import sys
+import zlib
 from pathlib import Path
 
 import numpy as np
@@ -72,10 +82,34 @@ def spot(n):
     return worst
 
 
-def same_bytes(new_dir, old_dir, pattern, label):
+# Everything up to a stream (object text and the stream's dictionary), then the
+# stream itself. Matching from one stream to the next covers the whole file.
+PDF_STREAM = re.compile(rb"(.*?>>)(\s*stream\r?\n)(.*?)(\r?\nendstream)", re.S)
+NEG_ZERO = re.compile(rb"(?<![\d.])-0(?![\d.])")
+
+
+def content(path):
+    """File bytes without the platform artefacts listed in the docstring."""
+    raw = path.read_bytes()
+    if path.suffix != ".pdf":
+        return raw.replace(b"\r\n", b"\n")
+
+    def plain(m):
+        head, body = m.group(1), m.group(3)
+        if b"FlateDecode" in head:
+            body = zlib.decompress(body)
+        return re.sub(rb"/Length \d+", b"", head) + b"\nstream\n" + NEG_ZERO.sub(b"0", body)
+
+    text = PDF_STREAM.sub(plain, raw)
+    # Objects that hold only an integer are compressed stream lengths.
+    text = re.sub(rb"(\d+ 0 obj\s+)\d+(\s+endobj)", rb"\1\2", text)
+    return re.sub(rb"\nxref\n.*", b"", text, flags=re.S)   # byte offsets of the objects
+
+
+def same_content(new_dir, old_dir, pattern, label):
     names = sorted(p.name for p in new_dir.glob(pattern))
     differ = [n for n in names
-              if not (old_dir / n).exists() or (old_dir / n).read_bytes() != (new_dir / n).read_bytes()]
+              if not (old_dir / n).exists() or content(old_dir / n) != content(new_dir / n)]
     print(f"{label:22s} {len(names)} files, {len(differ)} differ"
           + (f": {', '.join(differ)}" if differ else ""), flush=True)
     return np.inf if differ or not names else 0.0
@@ -87,10 +121,10 @@ def full(root):
     for name, keys in {**FILES, "motion.csv": ["Subject_ID"]}.items():
         worst = max(worst, compare(pd.read_csv(paper_out / name), pd.read_csv(OUT / name),
                                    keys, f"{name:22s} all sessions"))
-    worst = max(worst, same_bytes(OUT, paper_out, "*.txt", "text summaries"),
-                same_bytes(TABLES, root / "tables_supp", "*.tex", "supplementary tables"),
-                same_bytes(FIGS, root / "figures", "*.pdf", "figures"),
-                same_bytes(SUPP_FIGS, root / "figures_supp", "*.pdf", "supplementary figures"))
+    worst = max(worst, same_content(OUT, paper_out, "*.txt", "text summaries"),
+                same_content(TABLES, root / "tables_supp", "*.tex", "supplementary tables"),
+                same_content(FIGS, root / "figures", "*.pdf", "figures"),
+                same_content(SUPP_FIGS, root / "figures_supp", "*.pdf", "supplementary figures"))
     return worst
 
 
