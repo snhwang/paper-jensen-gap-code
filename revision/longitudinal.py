@@ -50,6 +50,14 @@ for b in (1500, 3000):
     lines.append(f"b={b}: {s.Subject_ID.nunique()} participants, {len(s)} sessions, "
                  f"median follow-up {s.groupby('Subject_ID').t.max().median():.1f} y, "
                  f"scanner changed between visits for {100 * changed.mean():.0f}%")
+    # Visits per participant, and age at the last included visit (released ages:
+    # whole years, "90 or older" coded as 90).
+    visits = s.groupby("Subject_ID").Visit.nunique()
+    last_age = s.loc[s.groupby("Subject_ID").days_from_V1.idxmax()].age
+    lines.append(f"  visits per participant: " + ", ".join(
+        f"{k} visits {n}" for k, n in visits.value_counts().sort_index().items())
+        + f"; 3 or more {int((visits >= 3).sum())}. Age at last visit 75 or older "
+        f"{int((last_age >= 75).sum())}, 85 or older {int((last_age >= 85).sum())}")
     for gap in ("J_ln", "J_lnS"):
         for kind, col in (("measured", gap), ("noise removed", f"{gap}_nc")):
             mu = s[col].mean()

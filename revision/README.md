@@ -110,7 +110,7 @@ content.
 | Section 4.3: MD and anisotropy terms, 13/16 and 15/16 signs, r = 0.90/0.96 | `v1_roi_stats.py` → `B_decomposition.csv`; `fig_region.py` → `fig5_decomposition.csv` |
 | Section 4.4: J_ln lower at b = 3000 (12–30%, >99% of participants), Δ_b vs age | `v1_roi_stats.py` → `C_bdependence.csv` |
 | Section 4.4: noise-corrected change (14–31%) and Δ_b vs age; SNR-covariate r = +0.11 | `post_native.py` → `noise_corrected.csv`, `bdep_snr.csv` |
-| Section 4.5: within-person rates, measured and noise-corrected; participants, sessions, follow-up, scanner changes. Time is the exact interval from `days_from_V1`, not the released whole-year ages | `longitudinal.py` → `longitudinal.txt` |
+| Section 4.5: within-person rates, measured and noise-corrected; participants, sessions, follow-up, scanner changes. Time is the exact interval from `days_from_V1`, not the released whole-year ages. The same file also gives visits per participant and age at the last visit, which the paper does not report | `longitudinal.py` → `longitudinal.txt` |
 | Section 4.6: uncorrected excess 7.5%, r = −0.60, SNR covariate r = −0.01; residual r ranges with both noise estimates | `post_native.py` → `beyond_tensor.csv`, `post_native_summary.txt` |
 | Figure 1 | `fig1_schematic.py` (theory only, no data) |
 | Figure 2 | `example_maps.py`, then `fig2_maps.py` |
