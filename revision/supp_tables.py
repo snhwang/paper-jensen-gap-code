@@ -1,9 +1,8 @@
 """LaTeX tables for the Supplementary Material, written from the analysis outputs.
 
   tab_age.tex       age correlations of the gaps and tensor metrics (Figure 4)
-  tab_bdep.tex      dependence on b, by region, with and without noise
-  tab_jf.tex        J_f with paired and with identical directions
-  tab_beyond.tex    age effects not explained by the tensor and noise
+  tab_bdep.tex      dependence on b, by region, measured (v1_roi_stats.py) and against the
+                    noise-floor nulls TaNc and DaNc (floor_null_stats.py)
 
 Usage:  python supp_tables.py
 """
@@ -53,50 +52,32 @@ lines += [r"\bottomrule", r"\end{tabular}"]
 
 # Dependence on b ------------------------------------------------------------
 C = pd.read_csv(OUT / "C_bdependence.csv").set_index("ROI")
-NC = pd.read_csv(OUT / "noise_corrected.csv")
-NC = NC[NC.shell == 1500].set_index("ROI")
-lines = [r"\begin{tabular}{@{}lrrrrrr@{}}", r"\toprule",
-         r" & & & \multicolumn{2}{c}{change} & \multicolumn{2}{c}{$r(\Delta_b J_{\ln},\mathrm{age})$}\\",
-         r"\cmidrule(lr){4-5}\cmidrule(l){6-7}",
-         r"Region & $J_{\ln}(1500)$ & $J_{\ln}(3000)$ & measured & noise removed & measured & noise removed\\",
+F = pd.read_csv(OUT / "floor_null_regions.csv")
+NT, ND = (F[F.null == t].set_index("ROI") for t in ("TaNc", "DaNc"))
+a16 = 0.05 / 16
+
+
+def pct(x, sig=True):
+    s = f"{x:+.1f}".replace("-", "$-$")
+    return s if sig else f"\\textit{{{s}}}"
+
+
+lines = [r"\begin{tabular}{@{}lrrrrrrrrr@{}}", r"\toprule",
+         r" & & & \multicolumn{5}{c}{change, \% of $J_{\ln}(1500)$} & \multicolumn{2}{c}{$r$ of excess with age}\\",
+         r"\cmidrule(lr){4-8}\cmidrule(l){9-10}",
+         r" & & & & \multicolumn{2}{c}{null} & \multicolumn{2}{c}{excess} & & \\",
+         r"\cmidrule(lr){5-6}\cmidrule(lr){7-8}",
+         r"Region & $J_{\ln}(1500)$ & $J_{\ln}(3000)$ & measured & tensor & direct. & tensor & direct."
+         r" & tensor & direct.\\",
          r"\midrule"]
 for roi in ROIS:
-    q, n = C.loc[roi], NC.loc[roi]
-    ch = f"{q.shift_pct:+.1f}".replace("-", "$-$")
-    chn = f"{n.dB_nc_shift_pct:+.1f}".replace("-", "$-$")
-    lines.append(f"{NAMES[roi]} & {q.Jln1500:.4f} & {q.Jln3000:.4f} & {ch}\\% & {chn}\\% & "
-                 f"{fmt(q.r_age_delta)} & {fmt(n.dB_nc)}\\\\")
+    q, t, d = C.loc[roi], NT.loc[roi], ND.loc[roi]
+    lines.append(f"{NAMES[roi]} & {q.Jln1500:.4f} & {q.Jln3000:.4f} & {pct(q.shift_pct)} & "
+                 f"{pct(t.floor_exact)} & {pct(d.floor_exact)} & "
+                 f"{pct(t.excess_exact, t.p_excess_exact < a16)} & {pct(d.excess_exact, d.p_excess_exact < a16)} & "
+                 f"{fmt(t.r_age_excess_exact, t.p_age_excess_exact < a16)} & "
+                 f"{fmt(d.r_age_excess_exact, d.p_age_excess_exact < a16)}\\\\")
 lines += [r"\bottomrule", r"\end{tabular}"]
 (TAB / "tab_bdep.tex").write_text("\n".join(lines), encoding="utf-8")
 
-# J_f, earlier preprint and corrected -------------------------------------------
-J = pd.read_csv(OUT / "jf_stats.csv").set_index("ROI")
-lines = [r"\begin{tabular}{@{}lrrrrrr@{}}", r"\toprule",
-         r" & \multicolumn{3}{c}{paired directions (earlier preprint)} & \multicolumn{3}{c}{identical directions}\\",
-         r"\cmidrule(lr){2-4}\cmidrule(l){5-7}",
-         r"Region & $J_f$ & null & mismatch & $J_f$ & null & above null\\", r"\midrule"]
-for roi in ROIS:
-    q = J.loc[roi]
-    lines.append(f"{NAMES[roi]} & {q.old:.4f} & {q.old_null:.4f} & {q.old_mismatch_pct:.0f}\\% & "
-                 f"{q.new:.4f} & {q.new_null:.4f} & {100 * q.frac_new_above_null:.0f}\\%\\\\")
-lines += [r"\bottomrule", r"\end{tabular}"]
-(TAB / "tab_jf.tex").write_text("\n".join(lines), encoding="utf-8")
-
-# Beyond the tensor and noise -----------------------------------------------
-X = pd.read_csv(OUT / "beyond_tensor.csv")
-X = X[X.variant == "TN"]
-lines = [r"\begin{tabular}{@{}l" + "rr" * 4 + "@{}}", r"\toprule",
-         r" & \multicolumn{4}{c}{$J_{\ln}$} & \multicolumn{4}{c}{$J_{\ln}^{S}$}\\",
-         r"\cmidrule(lr){2-5}\cmidrule(l){6-9}",
-         r" & \multicolumn{2}{c}{1500} & \multicolumn{2}{c}{3000} & \multicolumn{2}{c}{1500} & \multicolumn{2}{c}{3000}\\",
-         r"Region & excess & $r$ & excess & $r$ & excess & $r$ & excess & $r$\\", r"\midrule"]
-for roi in ROIS:
-    cells = []
-    for gap in ("J_ln", "J_lnS"):
-        for b in (1500, 3000):
-            q = X[(X.gap == gap) & (X.shell == b) & (X.ROI == roi)].iloc[0]
-            cells += [f"{q.excess_pct:+.0f}\\%".replace("-", "$-$"), fmt(q.r, q.q < 0.05)]
-    lines.append(NAMES[roi] + " & " + " & ".join(cells) + r"\\")
-lines += [r"\bottomrule", r"\end{tabular}"]
-(TAB / "tab_beyond.tex").write_text("\n".join(lines), encoding="utf-8")
 print("wrote", *sorted(p.name for p in TAB.glob("*.tex")))

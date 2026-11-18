@@ -1,0 +1,13 @@
+Corona radiata. GAM of each gap on age (sex-adjusted): edf and p of s(age), and the GLRT against a linear age term, with its p from a parametric bootstrap (2000 data sets simulated from the linear fit) and, for reference, from chi-squared. Then sex-adjusted slopes in %/y of the decomposition by age band
+b=1500 J_ln : edf 2.32, s(age) p=0.0e+00, GLRT statistic 8.48, bootstrap p=0.0195 (38 of 2000 simulated statistics as large), chi-squared p=1.2e-02, AIC gain over linear 5.8
+b=1500 J_lnS: edf 3.47, s(age) p=0.0e+00, GLRT statistic 54.61, bootstrap p=0.0005 (0 of 2000 simulated statistics as large), chi-squared p=1.8e-11, AIC gain over linear 49.7
+b=1500: signal gap lowest at age 53.5
+  ages 36-54 (n=517): observed -0.07, MD term +0.24, anisotropy term -0.23, predicted +0.01
+  ages 55-69 (n=376): observed +0.00, MD term +0.56, anisotropy term -0.40, predicted +0.16
+  ages 70-90 (n=461): observed +0.39, MD term +1.52, anisotropy term -0.67, predicted +0.84
+b=3000 J_ln : edf 1.94, s(age) p=0.0e+00, GLRT statistic 3.68, bootstrap p=0.0960 (191 of 2000 simulated statistics as large), chi-squared p=9.0e-02, AIC gain over linear 1.8
+b=3000 J_lnS: edf 3.69, s(age) p=0.0e+00, GLRT statistic 70.33, bootstrap p=0.0005 (0 of 2000 simulated statistics as large), chi-squared p=1.8e-14, AIC gain over linear 65.0
+b=3000: signal gap lowest at age 53.5
+  ages 36-54 (n=517): observed -0.10, MD term +0.19, anisotropy term -0.23, predicted -0.04
+  ages 55-69 (n=376): observed +0.04, MD term +0.51, anisotropy term -0.35, predicted +0.16
+  ages 70-90 (n=461): observed +0.37, MD term +1.30, anisotropy term -0.56, predicted +0.74

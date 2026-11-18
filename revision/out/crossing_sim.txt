@@ -1,0 +1,17 @@
+Two equal Gaussian fibre populations crossing at theta (crossing_sim.py)
+b       theta  FA_tensor  J_ln     J_ln_T   J_ln/J_ln_T
+1500      0      0.799  0.15077  0.15077  1.000
+1500     30      0.755  0.11943  0.12223  0.977
+1500     60      0.595  0.06232  0.06159  1.012
+1500     90      0.412  0.03560  0.02992  1.190
+3000      0      0.799  0.15077  0.15077  1.000
+3000     30      0.760  0.11964  0.12490  0.958
+3000     60      0.593  0.06307  0.05947  1.061
+3000     90      0.360  0.03591  0.02154  1.667
+
+With Rician noise, baseline SNR 25, 14 b=0 volumes, 10000 voxels (means over voxels; J_ln/J_ln_T is the ratio of the means)
+b       theta  ndir  J_ln     J_ln_T   J_ln/J_ln_T
+1500      0    93  0.15813  0.15031  1.052
+1500     90    93  0.04187  0.03027  1.383
+3000      0    92  0.10970  0.07764  1.413
+3000     90    92  0.04435  0.02119  2.093

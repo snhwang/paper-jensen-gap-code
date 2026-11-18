@@ -12,11 +12,13 @@ all data are looked for under one data root:
   JG_ATLAS     FSL/JHU atlases (JHU-ICBM-labels-1mm, FMRIB58_FA_1mm)
   JG_ZIPS      the download zips (<Subject>_V1_MR_DiffusionRecommended.zip)
 
-Outputs are written inside this folder and are not committed:
+Outputs are written inside this folder:
   OUT          out/             intermediate tables and text summaries
   FIGS         figures/         main-text figures
   SUPP_FIGS    figures_supp/    supplementary figures
   TABLES       tables_supp/     LaTeX tables for the supplement
+Only the text summaries and GROUP_TABLES of out/, and the supplementary tables,
+are committed.
 """
 import os
 from pathlib import Path
@@ -43,7 +45,18 @@ TABLES = ROOT / "tables_supp"
 for _d in (OUT, FIGS, SUPP_FIGS, TABLES):
     _d.mkdir(exist_ok=True)
 
-# Example participant of Figures 2 and 3 (a processing-session label, not a
+# The group-level tables of OUT. Each row is a region, metric or shell, never a
+# participant, and none holds an identifier. They are committed and published
+# with the code. Every other table in OUT is participant-level and stays private.
+GROUP_TABLES = [
+    "A_cross_sectional.csv", "B_decomposition.csv", "C_bdependence.csv",
+    "E_spectrum_voxelwise.csv", "bdep_snr.csv", "beyond_tensor.csv", "fa_correlations.csv",
+    "fig4_age_correlations.csv", "fig5_decomposition.csv", "jf_stats.csv", "longitudinal.csv",
+    "longitudinal_by_age.csv", "noise_corrected.csv", "sensitivity.csv",
+    "split_half_regions.csv", "floor_null_noise.csv", "floor_null_regions.csv",
+]
+
+# Example participant of Figures 3 and 4 (a processing-session label, not a
 # participant identifier).
 EXAMPLE_SESSION = "session_20260222_031250"
 

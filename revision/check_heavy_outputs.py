@@ -1,18 +1,21 @@
 """Check that the stored outputs of the slow passes match the current scripts.
 
-native_pass.py and jf_pass.py take hours, so run_all.py reuses their stored
-outputs unless --heavy is given. Two modes:
+native_pass.py, jf_pass.py, split_half_pass.py and floor_null_pass.py take
+minutes to hours, so run_all.py reuses their stored outputs unless --heavy is
+given. Two modes:
 
   python check_heavy_outputs.py [N]
       Spot check. Reruns the first N sessions (default 3) of each stored
-      output with the current code and compares them. Under a minute.
+      output with the current code and compares them. A few minutes. A stored
+      output that does not exist yet is skipped, with a note.
 
   python check_heavy_outputs.py --paper ROOT
       Full check after a complete rerun (run_all.py --heavy), for example of
       the public copy of this code against the paper's own outputs. ROOT is
       the paper's source tree, with figures/, figures_supp/, tables_supp/ and
       revision/analysis/out/. Compares every session and region of the slow
-      outputs and motion.csv, and requires the text summaries (out/*.txt), the
+      outputs and motion.csv and every value of the group-level tables
+      (GROUP_TABLES), and requires the text summaries (out/*.txt), the
       supplementary tables and the figure PDFs to have identical content.
 
       Content is compared without three artefacts of the operating system and
@@ -23,12 +26,13 @@ outputs unless --heavy is given. Two modes:
           and the byte-offset table are ignored),
         - the sign of zero in PDF coordinates ("-0" and "0" draw the same point).
 
-Files:   out/native_pass.csv, out/native_pass_long.csv, out/jf_pass.csv
-Both passes seed their noise per session, so a match should be exact up to
-floating-point rounding. The "seconds" column is the run time of each session
+Files:   out/native_pass.csv, out/native_pass_long.csv, out/jf_pass.csv,
+         out/split_half.csv, out/floor_null.csv
+All four passes seed their noise per session, so a match should be exact up
+to floating-point rounding. The "seconds" column is the run time of each session
 and is not compared. Exit code 1 if any value differs by more than 1e-9
-relative, if a session is in one set but not the other, or if any summary,
-table or figure differs.
+relative (or 1e-12 absolute, in the group-level tables), if a session is in one
+set but not the other, or if any summary, table or figure differs.
 """
 import re
 import sys
@@ -38,12 +42,14 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from config import FIGS, OUT, SUPP_FIGS, TABLES
+from config import FIGS, GROUP_TABLES, OUT, SUPP_FIGS, TABLES
 
 TOL = 1e-9
 FILES = {"native_pass.csv": ["Session_ID", "ROI", "shell_bval"],
          "native_pass_long.csv": ["Session_ID", "ROI", "shell_bval"],
-         "jf_pass.csv": ["Session_ID", "ROI"]}
+         "jf_pass.csv": ["Session_ID", "ROI"],
+         "split_half.csv": ["Session_ID", "ROI"],
+         "floor_null.csv": ["Session_ID", "ROI"]}
 
 
 def compare(old, new, keys, label):
@@ -71,9 +77,15 @@ def compare(old, new, keys, label):
 def spot(n):
     import jf_pass
     import native_pass
+    import floor_null_pass
+    import split_half_pass
+    modules = {"jf_pass.csv": jf_pass, "split_half.csv": split_half_pass, "floor_null.csv": floor_null_pass}
     worst = 0.0
     for name, keys in FILES.items():
-        module = jf_pass if name.startswith("jf") else native_pass
+        module = modules.get(name, native_pass)
+        if not (OUT / name).exists():
+            print(f"{name:22s} not stored yet, skipped")
+            continue
         stored = pd.read_csv(OUT / name)
         for sid in stored.Session_ID.drop_duplicates().head(n):
             new = pd.DataFrame(module.one(sid))
@@ -115,13 +127,40 @@ def same_content(new_dir, old_dir, pattern, label):
     return np.inf if differ or not names else 0.0
 
 
+def same_values(new_dir, old_dir, names, label):
+    """Check tables that must match row for row. A value may differ by TOL of
+    itself or by 1e-12, whichever is larger: correlations near zero carry
+    rounding differences of about 1e-12 between platforms, far above TOL of
+    their size."""
+    worst, differ = 0.0, []
+    for n in names:
+        old, new = pd.read_csv(old_dir / n), pd.read_csv(new_dir / n)
+        num = [c for c in old.columns if pd.api.types.is_numeric_dtype(old[c])]
+        same_text = old.drop(columns=num).astype(str).equals(new.drop(columns=num).astype(str))
+        if list(old.columns) != list(new.columns) or len(old) != len(new) or not same_text:
+            differ.append(n)
+            continue
+        a, b = old[num].to_numpy(float), new[num].to_numpy(float)
+        diff = np.abs(a - b)
+        with np.errstate(invalid="ignore", divide="ignore"):
+            rel = diff / np.maximum(np.abs(a), 1e-12)
+        if np.isfinite(rel).any():
+            worst = max(worst, float(np.nanmax(rel)))
+        if (diff > TOL * np.abs(a) + 1e-12).any() or (np.isnan(a) != np.isnan(b)).any():
+            differ.append(n)
+    print(f"{label:22s} {len(names)} files, max relative difference {worst:.1e}, "
+          f"{len(differ)} differ" + (f": {', '.join(differ)}" if differ else ""), flush=True)
+    return np.inf if differ else 0.0
+
+
 def full(root):
     paper_out = root / "revision" / "analysis" / "out"
     worst = 0.0
     for name, keys in {**FILES, "motion.csv": ["Subject_ID"]}.items():
         worst = max(worst, compare(pd.read_csv(paper_out / name), pd.read_csv(OUT / name),
                                    keys, f"{name:22s} all sessions"))
-    worst = max(worst, same_content(OUT, paper_out, "*.txt", "text summaries"),
+    worst = max(worst, same_values(OUT, paper_out, GROUP_TABLES, "group-level tables"),
+                same_content(OUT, paper_out, "*.txt", "text summaries"),
                 same_content(TABLES, root / "tables_supp", "*.tex", "supplementary tables"),
                 same_content(FIGS, root / "figures", "*.pdf", "figures"),
                 same_content(SUPP_FIGS, root / "figures_supp", "*.pdf", "supplementary figures"))

@@ -173,7 +173,8 @@ for b in SHELLS:
     q = B[B.shell == b]
     say(f"b={b}: sign of predicted slope matches observed in "
         f"{int((np.sign(q.slope_pred) == np.sign(q.slope_lnJS)).sum())}/16 regions; "
-        f"r(pred, observed) across regions = {np.corrcoef(q.slope_pred, q.slope_lnJS)[0, 1]:.3f}")
+        f"r(pred, observed) across regions = {np.corrcoef(q.slope_pred, q.slope_lnJS)[0, 1]:.3f}; "
+        f"least-squares slope of observed on predicted {np.polyfit(q.slope_pred, q.slope_lnJS, 1)[0]:.2f}")
 
 # --------------------------------------------------------------------------
 # C. Dependence on b (same session at both shells by construction)

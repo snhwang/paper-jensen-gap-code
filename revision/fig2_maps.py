@@ -1,4 +1,4 @@
-"""Figure 2: directional summaries, FA and the two gaps in the example participant.
+"""Figure 3: directional summaries, FA and the two gaps in the example participant.
 
 Panels (a)-(c) show ADC_1, ADC_0 and D_SM on one grey/white-matter window in
 which cerebrospinal fluid saturates. Panels (d)-(f) show FA, the

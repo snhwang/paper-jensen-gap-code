@@ -1,0 +1,107 @@
+split_half.csv: 1354 sessions, SH order 6 unless stated; Bonferroni over 16 regions (p < 0.0031)
+
+Change of the diffusivity gap from b=1500 to 3000, % of its b=1500 cohort mean
+             change_exact_data  floor_exact  excess_exact  change_split_data  floor_split  excess_split  change_split_nc4  change_split_riceS  change_split_rice
+ROI                                                                                                                                                             
+CR_all                   -15.8        -11.4          -4.4              -18.5        -13.3          -5.2             -14.4                -1.0               -9.4
+ACR                      -17.2        -13.0          -4.2              -20.4        -15.5          -4.9             -16.9                -1.2              -11.7
+SCR                      -14.7         -9.4          -5.2              -17.5        -11.1          -6.4             -11.9                -0.7               -6.5
+PCR                      -15.8        -12.9          -2.9              -17.6        -14.4          -3.2             -15.5                -1.3              -11.7
+Genu                     -30.3        -18.3         -12.0              -30.5        -18.2         -12.3             -20.5                -5.4              -25.5
+Body                     -26.9        -17.5          -9.4              -25.7        -15.9          -9.8             -17.8                -5.4              -20.8
+Splenium                 -28.2        -16.9         -11.3              -26.2        -14.6         -11.6             -16.4                -4.2              -18.7
+alic                     -22.3        -15.8          -6.5              -22.9        -15.6          -7.3             -17.3                -2.2              -13.4
+plic                     -23.7        -12.9         -10.8              -25.1        -13.0         -12.1             -14.2                -1.5              -11.2
+rlic                     -26.8        -16.5         -10.3              -27.7        -16.5         -11.3             -18.2                -2.1              -15.9
+ec                       -21.3        -16.3          -5.0              -25.3        -19.3          -6.1             -21.0                -2.3              -13.7
+slf                      -11.8        -11.1          -0.7              -11.4        -11.0          -0.4             -11.9                -0.7               -6.9
+ptr                      -18.1        -17.2          -0.9              -16.9        -16.8          -0.1             -18.2                -3.1              -18.6
+ss                       -24.2        -17.8          -6.4              -25.5        -18.6          -6.9             -20.5                -2.8              -19.8
+cingulum_cc              -21.4        -18.4          -3.0              -20.3        -17.7          -2.5             -19.9                -3.3              -17.5
+tapetum                  -16.3        -17.8           1.5              -18.2        -21.5           3.2             -23.5                -5.3              -39.4
+exact: data's decrease beyond the null's, significant in 15/16 (by 0.7 to 12.0 points); significant the other way in 1/16; not significant: none
+  exact: data -30.3% to -11.8%, floor -18.4 to -9.4 points; corona radiata: data -15.8%, floor -11.4, excess -4.4 points
+split: data's decrease beyond the null's, significant in 14/16 (by 0.4 to 12.3 points); significant the other way in 1/16; not significant: ptr
+  split: data -30.5% to -11.4%, floor -21.5 to -11.0 points; corona radiata: data -18.5%, floor -13.3, excess -5.2 points
+null's change as % of its own b=1500 gap, exact: -20.2% to -10.0%; split half: -23.5% to -11.9%
+order 4, split half: excess significant and negative in 15/16, positive in 1/16
+
+Sex-adjusted r with age of the change
+             r_age_data_exact  r_age_null_exact  r_age_excess_exact  r_age_data_split  r_age_null_split  r_age_excess_split
+ROI                                                                                                                        
+CR_all                  0.499             0.289               0.572             0.505             0.171               0.606
+ACR                     0.569             0.538               0.488             0.542             0.462               0.494
+SCR                     0.441             0.122               0.554             0.462             0.001               0.602
+PCR                     0.242            -0.160               0.492             0.321            -0.163               0.533
+Genu                    0.467             0.356               0.485             0.463             0.349               0.469
+Body                    0.295             0.207               0.315             0.286             0.288               0.255
+Splenium                0.358             0.261               0.369             0.321             0.203               0.329
+alic                    0.381             0.356               0.332             0.398             0.350               0.359
+plic                    0.507             0.384               0.485             0.484             0.297               0.488
+rlic                    0.301             0.160               0.341             0.285             0.062               0.351
+ec                      0.358             0.395               0.214             0.341             0.337               0.250
+slf                     0.426             0.383               0.317             0.414             0.313               0.338
+ptr                     0.549             0.500               0.465             0.539             0.480               0.432
+ss                      0.410             0.362               0.359             0.430             0.353               0.385
+cingulum_cc             0.497             0.485               0.383             0.461             0.449               0.332
+tapetum                 0.545             0.576               0.277             0.556             0.593               0.276
+exact: data +0.24 to +0.57 (corona radiata +0.50); null -0.16 to +0.58 (corona radiata +0.29); excess +0.21 to +0.57 (corona radiata +0.57), significant and positive in 16/16
+split: data +0.29 to +0.56 (corona radiata +0.51); null -0.16 to +0.59 (corona radiata +0.17); excess +0.25 to +0.61 (corona radiata +0.61), significant and positive in 16/16
+order 4, split half: excess r +0.19 to +0.60, significant and positive in 16/16
+
+J_f, cohort means
+             Jf_full  Jf_split  Jf_null  Jf_excess  p_Jf_excess   Jf_min  r_age_Jf_excess  r_outlier_Jf_excess
+ROI                                                                                                           
+CR_all       0.00415   0.00111 0.000276   0.000829            0 2.52e-05           -0.407              -0.0974
+ACR          0.00448   0.00108 0.000304   0.000773            0 1.93e-05           -0.403              -0.0992
+SCR          0.00388   0.00101 0.000198   0.000814            0 4.15e-05           -0.438               -0.103
+PCR          0.00399   0.00135 0.000379   0.000973            0 1.08e-05           -0.266              -0.0514
+Genu         0.00916   0.00438  0.00126    0.00311            0 0.000321           -0.263                 -0.1
+Body          0.0114   0.00557  0.00162    0.00395            0 0.000308           -0.116              -0.0511
+Splenium      0.0128   0.00628  0.00162    0.00466            0 0.000531           -0.167              -0.0363
+alic         0.00816   0.00261 0.000746    0.00187            0 9.77e-05           -0.292              -0.0328
+plic         0.00759   0.00265 0.000613    0.00204            0 0.000322           -0.275              -0.0392
+rlic         0.00757   0.00291 0.000797    0.00211            0 0.000226           -0.175                -0.02
+ec            0.0059   0.00156 0.000573   0.000983            0 3.46e-05            -0.24              -0.0365
+slf          0.00422   0.00149  0.00025    0.00124            0 1.78e-07           -0.427              -0.0275
+ptr          0.00548   0.00269 0.000925    0.00176            0 4.49e-09           -0.343              -0.0834
+ss           0.00624   0.00242 0.000769    0.00165            0 6.28e-05           -0.331              -0.0323
+cingulum_cc  0.00766   0.00284 0.000886    0.00195            0 1.02e-05           -0.369              0.00591
+tapetum      0.00327   0.00113 0.000487   0.000644            0 5.71e-06           -0.412               -0.085
+split-half J_f above the null in 16/16; share of the full-data J_f that is noise variance 51% to 76%
+  corona radiata: full 4.1e-03, split half 1.1e-03, null 2.8e-04, excess 8.3e-04, smallest allowed by the change of the gap 2.5e-05 (excess / smallest 32.9)
+  excess r with age -0.44 to -0.12 (corona radiata -0.41), significant and negative in 16/16; partial r with eddy's outlier fraction -0.10 to +0.01
+order 4: split-half J_f above the null in 16/16
+
+Against the lighter null nullA_ (mean of four Rician images); primary nullC_ beside it
+             floor_exact  floor_exact_avg4  excess_exact  excess_exact_avg4  r_age_excess_exact  r_age_excess_exact_avg4  r_age_null_exact  r_age_null_exact_avg4
+ROI                                                                                                                                                              
+CR_all            -11.43             -9.34         -4.35              -6.45                0.57                     0.57              0.29                   0.26
+ACR               -12.98            -11.07         -4.17              -6.08                0.49                     0.50              0.54                   0.52
+SCR                -9.44             -7.19         -5.23              -7.48                0.55                     0.55              0.12                   0.10
+PCR               -12.88            -10.78         -2.91              -5.01                0.49                     0.50             -0.16                  -0.20
+Genu              -18.28            -18.17        -11.99             -12.10                0.49                     0.49              0.36                   0.35
+Body              -17.53            -17.19         -9.41              -9.75                0.31                     0.33              0.21                   0.19
+Splenium          -16.90            -16.54        -11.29             -11.65                0.37                     0.38              0.26                   0.24
+alic              -15.80            -14.81         -6.50              -7.49                0.33                     0.33              0.36                   0.34
+plic              -12.95            -11.72        -10.79             -12.01                0.49                     0.48              0.38                   0.37
+rlic              -16.47            -15.48        -10.32             -11.31                0.34                     0.34              0.16                   0.16
+ec                -16.30            -14.91         -5.05              -6.43                0.21                     0.22              0.39                   0.38
+slf               -11.06             -8.94         -0.74              -2.86                0.32                     0.31              0.38                   0.39
+ptr               -17.20            -15.93         -0.95              -2.22                0.47                     0.47              0.50                   0.49
+ss                -17.78            -16.79         -6.37              -7.36                0.36                     0.35              0.36                   0.36
+cingulum_cc       -18.37            -17.63         -3.00              -3.74                0.38                     0.37              0.49                   0.50
+tapetum           -17.85            -17.34          1.51               1.00                0.28                     0.30              0.58                   0.57
+exact: floor -18.2 to -7.2 points (primary -18.4 to -9.4); excess negative and significant in 15/16 (by 2.2 to 12.1 points), positive in 1/16; corona radiata floor -9.3, excess -6.4
+  excess r with age +0.22 to +0.57 (corona radiata +0.57), significant and positive in 16/16; null r -0.20 to +0.57 (corona radiata +0.26)
+split: floor -20.8 to -8.8 points (primary -21.5 to -11.0); excess negative and significant in 15/16 (by 1.5 to 13.5 points), positive in 1/16; corona radiata floor -11.2, excess -7.3
+  excess r with age +0.26 to +0.60 (corona radiata +0.60), significant and positive in 16/16; null r -0.20 to +0.59 (corona radiata +0.13)
+split-half J_f above nullA_ in 16/16 (corona radiata null 2.2e-04, excess 8.9e-04); excess r with age -0.43 to -0.12, significant and negative in 16/16
+
+Share of the full-data gap that is noise variance, 1 - split/full, % (data, null)
+  b=1500: data 0.6 to 4.9 (corona radiata 3.4), null 0.9 to 5.1 (corona radiata 3.5)
+  b=3000: data 1.3 to 7.2 (corona radiata 4.9), null 1.3 to 6.9 (corona radiata 4.7)
+
+CSF floor at b=3000, 1351 of 1354 sessions with at least 10 CSF voxels (median 1143 voxels)
+  csf_mean_over_sd: median 3.90, 5th to 95th percentile 3.67 to 4.13 (one Rician 1.91, four averaged Rician 3.83, four-channel noncentral chi 3.94)
+  csf_mean_over_sigma: median 2.66, 5th to 95th percentile 2.52 to 2.81 (one Rician 1.25, four averaged Rician 2.51, four-channel noncentral chi 2.74)

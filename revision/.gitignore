@@ -1,5 +1,38 @@
-# Outputs of the pipeline (derived from access-restricted data)
-out/
+# Outputs of the pipeline. Only those that hold no participant data are
+# committed: the text summaries and group-level tables of out/ and the
+# supplementary tables.
+out/*
+!out/check_pairing.txt
+!out/crossing_sim.txt
+!out/example_stats.txt
+!out/fig_configurations.txt
+!out/floor_null_sim.txt
+!out/floor_null_stats.txt
+!out/jf_stats.txt
+!out/lifespan_shape.txt
+!out/longitudinal.txt
+!out/post_native_summary.txt
+!out/sensitivity.txt
+!out/split_half_stats.txt
+!out/summary.txt
+!out/A_cross_sectional.csv
+!out/B_decomposition.csv
+!out/C_bdependence.csv
+!out/E_spectrum_voxelwise.csv
+!out/bdep_snr.csv
+!out/beyond_tensor.csv
+!out/fa_correlations.csv
+!out/fig4_age_correlations.csv
+!out/fig5_decomposition.csv
+!out/jf_stats.csv
+!out/longitudinal.csv
+!out/longitudinal_by_age.csv
+!out/noise_corrected.csv
+!out/sensitivity.csv
+!out/split_half_regions.csv
+!out/floor_null_noise.csv
+!out/floor_null_regions.csv
 figures/
 figures_supp/
-tables_supp/
+# Python environment of the Quick start
+.venv/

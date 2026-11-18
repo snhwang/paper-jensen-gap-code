@@ -1,0 +1,6 @@
+main: N=1354, J_ln b1500 -0.448, J_lnS b1500 +0.282, J_ln b3000 -0.408, J_lnS b3000 +0.318
+top: N=1354, J_ln b1500 -0.448, J_lnS b1500 +0.283, J_ln b3000 -0.408, J_lnS b3000 +0.319
+cov: N=1354, J_ln b1500 -0.437, J_lnS b1500 +0.281, J_ln b3000 -0.397, J_lnS b3000 +0.317
+all: N=1370, J_ln b1500 -0.453, J_lnS b1500 +0.283, J_ln b3000 -0.414, J_lnS b3000 +0.319
+largest change from main: top 0.001, cov 0.011, all 0.006
+head motion vs age (b=1500 sessions): r = +0.131, n = 1354

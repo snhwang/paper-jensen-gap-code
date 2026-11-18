@@ -11,14 +11,30 @@ and top-coded at 90. Rates are in percent of the mean per year. The model is fit
 measured gap and to the gap with its noise inflation removed (native_pass.py:
 gap - (gap of tensor + noise - gap of tensor)).
 
+Whether the rate depends on age: a second model adds the interaction of time with
+age at the first visit (centred at 60, in decades),
+    gap ~ a60 + time + time:a60 + sex,
+which gives the within-person rate and its 95% CI at each first-visit age from 40 to
+85 (the text reports 45, 60 and 75), and the model's mean level at each age (for the
+segments of Figure 7c, d). The
+gap is first expressed in percent from its mean, so coefficients are in %/y.
+A random-slope version of this model does not converge in statsmodels, so as a check
+that lets rates differ between people, each participant's own least-squares slope is
+regressed on a60 and sex, weighted by squared follow-up, with HC3 robust errors.
+
 Inputs:  out/long_sessions.csv, out/native_pass.csv and out/native_pass_long.csv
-Outputs: out/longitudinal.csv, out/longitudinal.txt
+Outputs: out/longitudinal.csv, out/longitudinal_by_age.csv, out/longitudinal.txt
 Usage:   python longitudinal.py
 """
 import glob
 
+import numpy as np
 import pandas as pd
+import statsmodels.api as sm
 import statsmodels.formula.api as smf
+
+AGES = (45, 60, 75)                    # reported in the text and drawn as segments
+CURVE = tuple(range(40, 86))           # the rate as a curve over first-visit age (Figure 7d inset)
 
 from config import HCP, OUT
 
@@ -36,7 +52,25 @@ for gap in ("J_ln", "J_lnS"):
     nat[f"{gap}_nc"] = nat[gap] - (nat[f"{gap}_TN"] - nat[f"{gap}_T"])
 
 d = sess[sess.standard].merge(nat, on="Session_ID")
-lines, rows = [], []
+lines, rows, by_age = [], [], []
+
+
+def at_ages(params, cov, rate, inter):
+    """Rate and 95% CI at each first-visit age, from a rate and its interaction with a60."""
+    out = []
+    V = cov.loc[[rate, inter], [rate, inter]].values
+    for a in CURVE:
+        w = np.array([1.0, (a - 60) / 10])
+        r, se = w @ params[[rate, inter]].values, np.sqrt(w @ V @ w)
+        out.append((a, r, r - 1.96 * se, r + 1.96 * se))
+    return out
+
+
+def by_age_rows(b, gap, kind, method):
+    return [(r["age"], r["rate"], r["ci_lo"], r["ci_hi"]) for r in by_age
+            if (r["shell"], r["gap"], r["kind"], r["method"]) == (b, gap, kind, method)
+            and r["age"] in AGES]
+
 for b in (1500, 3000):
     s = d[d.shell_bval == b].copy()
     s = s[s.groupby("Subject_ID").Visit.transform("nunique") >= 2]
@@ -70,6 +104,33 @@ for b in (1500, 3000):
                              n_participants=s.Subject_ID.nunique(), n_sessions=len(s)))
             lines.append(f"  {gap:5s} {kind:13s}: {rate:+.3f} %/y "
                          f"[{ci[0]:+.3f}, {ci[1]:+.3f}], p={m.pvalues['t']:.1e}")
+
+            # The rate as a function of age at the first visit.
+            s["y"] = 100 * (s[col] / mu - 1)
+            s["a60"] = (s.age_bl - 60) / 10
+            s["male"] = (s.sex == "M").astype(float)
+            m = smf.mixedlm("y ~ a60 + t + t:a60 + male", s, groups=s.Subject_ID).fit(method="lbfgs")
+            for a, r, lo, hi in at_ages(m.params, m.cov_params(), "t", "t:a60"):
+                level = m.params["Intercept"] + m.params["a60"] * (a - 60) / 10 + m.params["male"] * s.male.mean()
+                by_age.append(dict(shell=b, gap=gap, kind=kind, method="mixed", age=a, rate=r, ci_lo=lo,
+                                   ci_hi=hi, p_age=m.pvalues["t:a60"], level=level))
+            lines.append(f"    by first-visit age (mixed): " + ", ".join(
+                f"{a}: {r:+.2f} [{lo:+.2f}, {hi:+.2f}]" for a, r, lo, hi in by_age_rows(b, gap, kind, "mixed"))
+                + f"; interaction p={m.pvalues['t:a60']:.1e}")
+
+            # Check: each participant's own slope, regressed on age at the first visit.
+            per = s.groupby("Subject_ID").apply(lambda q: pd.Series(dict(
+                slope=np.polyfit(q.t, q.y, 1)[0], a60=q.a60.iloc[0], male=q.male.iloc[0], fu=q.t.max())),
+                include_groups=False)
+            X = sm.add_constant(per[["a60"]].assign(male=per.male - per.male.mean()))
+            w = sm.WLS(per.slope, X, weights=per.fu ** 2).fit(cov_type="HC3")
+            for a, r, lo, hi in at_ages(w.params, w.cov_params(), "const", "a60"):
+                by_age.append(dict(shell=b, gap=gap, kind=kind, method="per-person", age=a, rate=r,
+                                   ci_lo=lo, ci_hi=hi, p_age=w.pvalues["a60"], level=np.nan))
+            lines.append(f"    by first-visit age (per-person slopes): " + ", ".join(
+                f"{a}: {r:+.2f} [{lo:+.2f}, {hi:+.2f}]" for a, r, lo, hi in by_age_rows(b, gap, kind, "per-person"))
+                + f"; age p={w.pvalues['a60']:.1e}")
 pd.DataFrame(rows).to_csv(OUT / "longitudinal.csv", index=False)
+pd.DataFrame(by_age).to_csv(OUT / "longitudinal_by_age.csv", index=False)
 (OUT / "longitudinal.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
 print("\n".join(lines))

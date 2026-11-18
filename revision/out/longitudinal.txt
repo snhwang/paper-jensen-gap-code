@@ -1,0 +1,28 @@
+b=1500: 852 participants, 2197 sessions, median follow-up 5.5 y, scanner changed between visits for 4%
+  visits per participant: 2 visits 437, 3 visits 337, 4 visits 78; 3 or more 415. Age at last visit 75 or older 295, 85 or older 139
+  J_ln  measured     : -0.466 %/y [-0.520, -0.411], p=7.3e-63
+    by first-visit age (mixed): 45: -0.33 [-0.41, -0.25], 60: -0.46 [-0.52, -0.41], 75: -0.60 [-0.68, -0.52]; interaction p=3.1e-06
+    by first-visit age (per-person slopes): 45: -0.33 [-0.44, -0.22], 60: -0.47 [-0.54, -0.40], 75: -0.61 [-0.71, -0.51]; age p=5.1e-04
+  J_ln  noise removed: -0.399 %/y [-0.450, -0.348], p=3.2e-53
+    by first-visit age (mixed): 45: -0.36 [-0.43, -0.28], 60: -0.40 [-0.45, -0.35], 75: -0.44 [-0.51, -0.37]; interaction p=1.3e-01
+    by first-visit age (per-person slopes): 45: -0.36 [-0.45, -0.27], 60: -0.40 [-0.47, -0.34], 75: -0.45 [-0.55, -0.35]; age p=2.1e-01
+  J_lnS measured     : +0.128 %/y [+0.083, +0.173], p=2.4e-08
+    by first-visit age (mixed): 45: -0.17 [-0.24, -0.11], 60: +0.12 [+0.08, +0.17], 75: +0.42 [+0.36, +0.48]; interaction p=3.0e-39
+    by first-visit age (per-person slopes): 45: -0.17 [-0.26, -0.09], 60: +0.13 [+0.07, +0.18], 75: +0.43 [+0.35, +0.51]; age p=3.8e-20
+  J_lnS noise removed: +0.181 %/y [+0.135, +0.227], p=9.0e-15
+    by first-visit age (mixed): 45: -0.19 [-0.26, -0.13], 60: +0.18 [+0.14, +0.22], 75: +0.55 [+0.49, +0.61]; interaction p=1.3e-61
+    by first-visit age (per-person slopes): 45: -0.19 [-0.27, -0.12], 60: +0.18 [+0.13, +0.23], 75: +0.55 [+0.46, +0.63]; age p=6.0e-33
+b=3000: 852 participants, 2197 sessions, median follow-up 5.5 y, scanner changed between visits for 4%
+  visits per participant: 2 visits 437, 3 visits 337, 4 visits 78; 3 or more 415. Age at last visit 75 or older 295, 85 or older 139
+  J_ln  measured     : -0.336 %/y [-0.382, -0.290], p=1.3e-46
+    by first-visit age (mixed): 45: -0.26 [-0.32, -0.19], 60: -0.33 [-0.38, -0.29], 75: -0.41 [-0.48, -0.35]; interaction p=1.5e-03
+    by first-visit age (per-person slopes): 45: -0.26 [-0.33, -0.18], 60: -0.34 [-0.40, -0.28], 75: -0.42 [-0.51, -0.33]; age p=1.1e-02
+  J_ln  noise removed: -0.241 %/y [-0.299, -0.182], p=8.7e-16
+    by first-visit age (mixed): 45: -0.27 [-0.36, -0.18], 60: -0.24 [-0.30, -0.18], 75: -0.21 [-0.30, -0.13]; interaction p=3.6e-01
+    by first-visit age (per-person slopes): 45: -0.27 [-0.39, -0.15], 60: -0.24 [-0.32, -0.17], 75: -0.22 [-0.33, -0.11]; age p=6.1e-01
+  J_lnS measured     : +0.217 %/y [+0.174, +0.260], p=7.4e-23
+    by first-visit age (mixed): 45: -0.11 [-0.17, -0.05], 60: +0.21 [+0.17, +0.25], 75: +0.54 [+0.48, +0.60]; interaction p=3.6e-51
+    by first-visit age (per-person slopes): 45: -0.11 [-0.18, -0.04], 60: +0.21 [+0.17, +0.26], 75: +0.54 [+0.46, +0.62]; age p=2.8e-30
+  J_lnS noise removed: +0.294 %/y [+0.232, +0.357], p=4.4e-20
+    by first-visit age (mixed): 45: -0.11 [-0.20, -0.02], 60: +0.29 [+0.23, +0.35], 75: +0.69 [+0.61, +0.78]; interaction p=4.2e-36
+    by first-visit age (per-person slopes): 45: -0.11 [-0.22, -0.00], 60: +0.29 [+0.22, +0.36], 75: +0.69 [+0.58, +0.81]; age p=2.8e-20

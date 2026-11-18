@@ -1,4 +1,4 @@
-"""Voxel maps of the example participant for Figures 1 and 2 of the revision.
+"""Voxel maps of the example participant for Figures 3 and 4 of the revision.
 
 Recomputes, from the minimally preprocessed DWI of one session and with one set
 of definitions, every quantity the two figures show.

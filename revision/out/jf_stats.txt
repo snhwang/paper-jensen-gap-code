@@ -1,0 +1,4 @@
+jf_pass.csv: 300 sessions
+paired directions: J_f below its noise-plus-mismatch null in 14/16 regions; mismatch share 8% to 18%
+identical directions: J_f above its noise null in 3/16 regions (Splenium, plic, slf), by at most 3% (cohort means)
+corona radiata: beta 0.082; expected J_f from Delta_b J_ln about 2.7e-04; corrected J_f noise level 4.8e-03

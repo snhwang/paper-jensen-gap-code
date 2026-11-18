@@ -1,0 +1,3 @@
+68 pairs used for J_f (mutual nearest, |cos| > 0.99): angle 2.1 to 8.1 deg, median 6.0 deg
+J_f measured median 0.0153; J_f under Gaussian null with these pairs median 0.0016 (11% of measured); Spearman(J_f, J_f null) 0.74; Spearman(J_f null, FA) 0.98
+Delta_b J_ln measured median -0.0089 (-18.2% of J_ln); null from direction sets median +0.00001 (+0.04%), IQR [-0.0117  0.0107]

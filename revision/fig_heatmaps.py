@@ -1,11 +1,11 @@
-"""Age-correlation heatmaps: Figure 4 (gaps and tensor metrics) and
+"""Age-correlation heatmaps: Figure 5 (gaps and tensor metrics) and
 Supplementary Figure S1 (rung-pair gap spectrum).
 
 Both use the same layout: regions in rows, metrics in columns, one block per
 shell, sex-adjusted partial r in colour, Bonferroni-non-significant cells hatched.
 
 Inputs: out/E_spectrum_voxelwise.csv (v1_roi_stats.py) for S1, and
-out/native_pass.csv with the cohort file for Figure 4.
+out/native_pass.csv with the cohort file for Figure 5.
 Usage:  python fig_heatmaps.py [spectrum|main|both]
 """
 import sys

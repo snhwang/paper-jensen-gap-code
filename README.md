@@ -24,9 +24,10 @@ revision/           the revised manuscript: every number, figure and table
 The `revision/` folder holds the analysis of the revised manuscript. Its scripts
 produce every number, figure and table of the revised text and supplement, and
 `revision/run_all.py` runs them in order. The revision uses the first visit of
-each participant (N = 1,354) and fits the tensor with DIPY. See
-`revision/README.md` for its inputs and for the script behind each result. The
-rest of this README describes the analysis of the earlier version.
+each participant (N = 1,354) and fits the tensor with DIPY. Its Python packages,
+at the versions used, are in `revision/requirements.txt`. See
+`revision/README.md` for setup, its inputs and the script behind each result.
+The rest of this README describes the analysis of the earlier version.
 
 ## Setup
 
@@ -37,11 +38,11 @@ cd paper-jensen-gap-code
 ```
 
 ### 2. Python environment (for gap computation, figures, statistics)
-Python 3.11+ is recommended.
+Python 3.11 or later is needed.
 ```
 python -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
-pip install -r requirements.txt    # numpy, pandas, scipy, statsmodels, matplotlib, nibabel
+pip install -r requirements.txt    # the pinned list of revision/requirements.txt
 ```
 
 ### 3. Install FSL (for preprocessing and the TBSS pipeline)

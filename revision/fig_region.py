@@ -1,15 +1,21 @@
-"""Figures 5 and 6 of the revision (region level).
+"""Figures 6 and 7 of the revision (region level).
 
-Figure 5: why the two gaps change with age in opposite directions. The age slope
+Figure 6: why the two gaps change with age in opposite directions. The age slope
 of ln J_lnS is split into the tensor-model terms 2 ln(b ADC_1) and ln J_ln.
-Figure 6: (a) dependence on b, (b) lifespan trajectories in the corona radiata,
-(c, d) within-person change, with the rates of longitudinal.py.
+Figure 7: (a) dependence on b, (b) lifespan course in the corona radiata: means in
+age bins (36-39, 40-44, ..., 85-90), GAM curves (mssm, REML) with pointwise 95% intervals and the
+linear fits they are tested against (GLRT, p from a parametric bootstrap; this step
+takes several minutes),
+(c, d) within-person change,
+with the rates of longitudinal.py. The GAM tests and the course over age of the
+decomposition terms (Section 4.3) go to out/lifespan_shape.txt.
 
 Inputs:  config.HCP tables (cr_gaps_long.csv), out/v1_cohort_sessions.csv
          (v1_roi_stats.py), out/long_sessions.csv (long_sessions.py),
-         out/native_pass*.csv (native_pass.py), out/longitudinal.csv
+         out/native_pass*.csv (native_pass.py), out/longitudinal.csv and
+         out/longitudinal_by_age.csv (longitudinal.py)
 Outputs: figures/fig5_decomposition.pdf, figures/fig6_aging.pdf (.png previews),
-         out/fig5_decomposition.csv (slopes plotted in Figure 5)
+         out/fig5_decomposition.csv (slopes plotted in Figure 6), out/lifespan_shape.txt
 Usage:   python fig_region.py
 """
 
@@ -17,7 +23,9 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from statsmodels.nonparametric.smoothers_lowess import lowess
+from mssm import models as mm
+from mssm.src.python.compare import compare_CDL
+from mssm.src.python.utils import approx_smooth_p_values
 
 from config import FIGS, HCP, NAMES, OUT, ROIS
 
@@ -52,8 +60,88 @@ for b in (1500, 3000):
 D = pd.DataFrame(rows)
 D["pred"] = D.md + D.aniso
 
+N_BOOT = 2000
+
+
+def fit_age(d, age_term):
+    m = mm.GAMM(mm.Formula(mm.lhs("y"), [mm.i(), age_term, mm.l(["male"])], data=d, print_warn=False),
+                mm.Gaussian())
+    m.fit(progress_bar=False)
+    return m
+
+
+def glrt(d):
+    """GAM and linear fits of d, and the generalized likelihood ratio test of the GAM
+    against the linear model (conditional on the smoothing parameter)."""
+    gam, lin = fit_age(d, mm.f(["age"])), fit_age(d, mm.l(["age"]))
+    return gam, lin, compare_CDL(gam, lin, correct_V=False, perform_GLRT=True, correct_t1=True, seed=0)
+
+
+def gam_age(s, col):
+    """GAM of one gap (percent from its cohort mean) on age in one region and shell: a
+    penalized spline of age (mssm defaults, 10 B-spline basis functions, second-order
+    difference penalty, REML) with sex as a centred covariate. Returns the curve and its
+    pointwise 95% interval on GRID at the average sex, the straight line of the linear
+    model, the edf and Wood (2013) p-value of s(age), and the test against the linear
+    model. Ignoring uncertainty in the smoothing parameter makes the GLRT's chi-squared
+    p-value too small, and correcting for it makes it too large (Krause et al. 2025,
+    footnote 12). Its p-value is therefore taken from a parametric bootstrap instead:
+    N_BOOT data sets are simulated from the linear fit by resampling its residuals, and
+    p = (1 + number of simulated statistics >= the observed one) / (1 + N_BOOT)."""
+    d = pd.DataFrame(dict(y=100 * (s[col].values / s[col].mean() - 1), age=s.age.values.astype(float),
+                          male=(s.sex.values == "M") - (s.sex.values == "M").mean()))
+    gam, lin, obs = glrt(d)
+    mu = lin.predict([0, 1, 2], d)[0]
+    res = d.y.values - mu
+    rng = np.random.default_rng(0)
+    sim = np.empty(N_BOOT)
+    for k in range(N_BOOT):
+        sim[k] = glrt(d.assign(y=mu + rng.choice(res, len(res))))[2]["test_stat"]
+    n_ge = int((sim >= obs["test_stat"]).sum())
+    grid = pd.DataFrame(dict(age=GRID, male=0.0))
+    pred, _, half = gam.predict([0, 1], grid, ci=True)
+    return dict(curve=pred, lo=pred - half, hi=pred + half, line=lin.predict([0, 1], grid)[0],
+                edf=gam.term_edf[0], p_smooth=approx_smooth_p_values(gam)[0][0], stat=obs["test_stat"],
+                p_chi2=obs["p"], n_ge=n_ge, p_boot=(1 + n_ge) / (1 + N_BOOT), aic_gain=-obs["aic_diff"])
+
+
+def fmt_p(p):
+    if p < 0.001:
+        return "$p<0.001$"
+    return f"$p={p:.3f}$" if p < 0.01 else f"$p={p:.2f}$"
+
+
+# The course over age in the corona radiata (Section 4.3 and Figure 7b): a GAM of each
+# gap on age, the age at the minimum of the signal gap's curve, and the slopes of the
+# decomposition in age bands.
+GRID = np.arange(36, 90.01, 0.5)
+BANDS = ((36, 55), (55, 70), (70, 91))
+GAMS = {}
+shape = ["Corona radiata. GAM of each gap on age (sex-adjusted): edf and p of s(age), and the GLRT "
+         f"against a linear age term, with its p from a parametric bootstrap ({N_BOOT} data sets "
+         "simulated from the linear fit) and, for reference, from chi-squared. Then sex-adjusted "
+         "slopes in %/y of the decomposition by age band"]
+for b in (1500, 3000):
+    s = v1[(v1.shell_bval == b) & (v1.ROI == "CR_all")]
+    for col, name in (("J_ln_D_mean", "J_ln"), ("J_ln_S_mean", "J_lnS")):
+        r = GAMS[(b, col)] = gam_age(s, col)
+        shape.append(f"b={b} {name:5s}: edf {r['edf']:.2f}, s(age) p={r['p_smooth']:.1e}, "
+                     f"GLRT statistic {r['stat']:.2f}, bootstrap p={r['p_boot']:.4f} "
+                     f"({r['n_ge']} of {N_BOOT} simulated statistics as large), chi-squared p={r['p_chi2']:.1e}, "
+                     f"AIC gain over linear {r['aic_gain']:.1f}")
+    shape.append(f"b={b}: signal gap lowest at age {GRID[np.argmin(GAMS[(b, 'J_ln_S_mean')]['curve'])]:.1f}")
+    for a0, a1 in BANDS:
+        q = s[(s.age >= a0) & (s.age < a1)]
+        a, x = q.age.values, q.sex.values
+        o, m_, n_ = (slope(np.log(q.J_ln_S_mean.values), a, x), slope(2 * np.log(b * q.ADC_1_mean.values), a, x),
+                     slope(np.log(q.J_ln_D_mean.values), a, x))
+        shape.append(f"  ages {a0}-{a1 - 1} (n={len(q)}): observed {o:+.2f}, MD term {m_:+.2f}, "
+                     f"anisotropy term {n_:+.2f}, predicted {m_ + n_:+.2f}")
+(OUT / "lifespan_shape.txt").write_text("\n".join(shape) + "\n", encoding="utf-8")
+print("\n".join(shape))
+
 # --------------------------------------------------------------------------
-# Figure 4
+# Figure 6
 # --------------------------------------------------------------------------
 fig = plt.figure(figsize=(6.9, 4.0), constrained_layout=True)
 gs = fig.add_gridspec(1, 2, width_ratios=[1.55, 1])
@@ -99,7 +187,7 @@ plt.close(fig)
 D.to_csv(OUT / "fig5_decomposition.csv", index=False)
 
 # --------------------------------------------------------------------------
-# Figure 6
+# Figure 7
 # --------------------------------------------------------------------------
 
 fig, axs = plt.subplots(2, 2, figsize=(6.0, 5.2), constrained_layout=True)
@@ -120,17 +208,30 @@ ax.set_title("(a) Dependence on $b$")
 
 ax = axs[1]
 s = v1[(v1.shell_bval == 1500) & (v1.ROI == "CR_all")]
-for c, col, lab in (("J_ln_D_mean", BLUE, r"$J_{\ln}$"), ("J_ln_S_mean", ORANGE, r"$J_{\ln}^{S}$")):
+# The band is for the mean curve, so the data are shown on the same footing: means in
+# Age bins (36-39, then 5-year bins, 85-90 last) with their 95% CIs (individuals scatter far more widely, panels c, d).
+# The dashed line is the linear model that the GAM is tested against.
+EDGES = (36, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 91)
+bins = pd.cut(s.age, EDGES, right=False)
+for k, (c, col, lab) in enumerate((("J_ln_D_mean", BLUE, r"$J_{\ln}$"), ("J_ln_S_mean", ORANGE, r"$J_{\ln}^{S}$"))):
     yv = 100 * (s[c] / s[c].mean() - 1)
-    ax.scatter(s.age, yv, s=1.5, color=col, alpha=0.18, lw=0, rasterized=True)
-    lo = lowess(yv, s.age, frac=0.4)
-    ax.plot(lo[:, 0], lo[:, 1], color=col, lw=1.8, label=lab)
+    q = pd.DataFrame(dict(age=s.age, y=yv)).groupby(bins, observed=True).agg(
+        age=("age", "mean"), m=("y", "mean"), sd=("y", "std"), n=("y", "size"))
+    ax.errorbar(q.age, q.m, yerr=1.96 * q.sd / np.sqrt(q.n), fmt="o", ms=2.6, color=col, mec="white",
+                mew=0.4, elinewidth=0.7, capsize=0, zorder=3)
+    r = GAMS[(1500, c)]
+    ax.fill_between(GRID, r["lo"], r["hi"], color=col, alpha=0.3, lw=0)
+    ax.plot(GRID, r["curve"], color=col, lw=1.6, label=lab)
+    ax.plot(GRID, r["line"], color=col, lw=0.8, ls=(0, (3, 2)))
+    ax.text(0.03, 0.17 - 0.08 * k, f"{lab} {fmt_p(r['p_boot'])}, edf {r['edf']:.1f}",
+            transform=ax.transAxes, fontsize=6, color=col)
+ax.text(0.03, 0.25, "GAM against straight line:", transform=ax.transAxes, fontsize=6, color=INK)
 ax.axhline(0, color="0.8", lw=0.5)
-ax.set_ylim(-45, 45)
+ax.set_ylim(-20, 15)
 ax.set_xlabel("age (years)")
 ax.set_ylabel("% from cohort mean")
 ax.set_title("(b) Lifespan, corona radiata")
-ax.legend(frameon=False, fontsize=6.5, loc="upper left", handlelength=1.2)
+ax.legend(frameon=False, fontsize=6.5, loc="upper center", ncol=2, handlelength=1.2)
 
 # Panels (c, d): the sessions and rates of longitudinal.py, so the figure and the
 # text share one source. Trajectories show the measured gap at b = 1500.
@@ -146,16 +247,51 @@ first = L.groupby("Subject_ID").days_from_V1.transform("min")
 age_bl = L.loc[L.days_from_V1 == first].set_index("Subject_ID").age.reindex(L.Subject_ID)
 L["x"] = age_bl.values + (L.days_from_V1 - first) / 365.25
 rates = pd.read_csv(OUT / "longitudinal.csv").query("shell == 1500").set_index(["gap", "kind"])
+# The model's within-person change over 10 years of follow-up, from first-visit ages
+# of 45, 60 and 75 and the model's mean level there. For the signal gap the rate
+# depends on age at the first visit, so panel (d) uses the rate at each age and shows
+# it, with its 95% CI, as a curve over first-visit age in an inset. The diffusivity
+# gap's rate does not, once its noise inflation is removed (longitudinal.txt), so
+# panel (c) uses the single rate at all three ages and gives its CI in the label.
+# (The CI of a rate spans about 1 point of the y axis over 10 years, too narrow to
+# show on the trajectories themselves.)
+by_age = pd.read_csv(OUT / "longitudinal_by_age.csv").query(
+    "shell == 1500 and kind == 'measured' and method == 'mixed'")
+SEG_AGES = (45, 60, 75)
+
+
+def segment(ax, a, level, rate):
+    ax.plot([a, a + 10], [level, level + 10 * rate], color=INK, lw=1.4, solid_capstyle="round",
+            zorder=4)
+
+
 for ax, c, col, lab, tag in ((axs[2], "J_ln", BLUE, r"$J_{\ln}$", "(c)"),
                              (axs[3], "J_lnS", ORANGE, r"$J_{\ln}^{S}$", "(d)")):
     y = 100 * (L[c] / L[c].mean() - 1)
     for _, q in L.assign(y=y).sort_values("x").groupby("Subject_ID"):
         ax.plot(q.x, q.y, color=col, lw=0.3, alpha=0.18)
-    rm, rn = rates.loc[(c, "measured")], rates.loc[(c, "noise removed")]
-    ax.text(0.03, 0.04, f"within person, %/y\nmeasured {rm.rate:+.2f} "
-            f"[{rm.ci_lo:+.2f}, {rm.ci_hi:+.2f}]\nnoise removed {rn.rate:+.2f} "
-            f"[{rn.ci_lo:+.2f}, {rn.ci_hi:+.2f}]", transform=ax.transAxes, fontsize=6,
-            color=INK)
+    ra = by_age[by_age.gap == c]
+    seg = ra[ra.age.isin(SEG_AGES)]
+    if c == "J_ln":
+        rm = rates.loc[(c, "measured")]
+        for r in seg.itertuples():
+            segment(ax, r.age, r.level, rm.rate)
+        ax.text(0.03, 0.04, f"within person, %/y\n{rm.rate:+.2f} [{rm.ci_lo:+.2f}, {rm.ci_hi:+.2f}]",
+                transform=ax.transAxes, fontsize=6, color=INK)
+    else:
+        for r in seg.itertuples():
+            segment(ax, r.age, r.level, r.rate)
+        ins = ax.inset_axes([0.14, 0.66, 0.34, 0.28])
+        ins.fill_between(ra.age, ra.ci_lo, ra.ci_hi, color=col, alpha=0.3, lw=0)
+        ins.plot(ra.age, ra.rate, color=col, lw=1.2)
+        ins.axhline(0, color=MUTED, lw=0.5)
+        ins.plot(seg.age, seg.rate, "o", color=INK, ms=2.2, zorder=3)
+        ins.set_xlim(40, 85)
+        ins.set_xticks([45, 60, 75])
+        ins.tick_params(labelsize=5.5, length=2, pad=1)
+        ins.set_xlabel("age at first visit", fontsize=5.5, labelpad=1)
+        ins.set_ylabel("rate, %/y", fontsize=5.5, labelpad=1)
+        ins.patch.set_alpha(0.85)
     ax.set_ylim(-45, 45)
     ax.axhline(0, color="0.8", lw=0.5)
     ax.set_xlabel("age (years)")

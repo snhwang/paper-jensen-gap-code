@@ -5,9 +5,13 @@ Manuscript Section 4.1: in white matter of the example participant,
   - medians of ADC_0/ADC_1 and D_SM/ADC_1 ("about 5% below")
   - Spearman correlation of J_ln with FA at both shells
   - Spearman correlation of J_lnS with (b MD)^2 J_ln, and their median ratio
-  - number of white-matter voxels (Figure 3a caption)
+  - number of white-matter voxels (Figure 4a caption)
+Manuscript Section 3.2: in the same white matter, how many directional signals the
+  limits S' in [1e-2, 1] and the floor D >= 1e-6 change, and how many gaps are
+  set to zero
 
-Input:   example-participant maps (example_maps.py) and the session's b-vectors
+Input:   example-participant maps (example_maps.py), the session's b-vectors and
+         its DWI
 Output:  out/example_stats.txt
 Usage:   python example_stats.py
 """
@@ -55,5 +59,24 @@ for b in (1500, 3000):
         f"{spearmanr(jl, fa)[0]:.3f}; Spearman J_lnS~(b MD)^2 J_ln "
         f"{spearmanr(js, pred)[0]:.3f}; median J_lnS/((b MD)^2 J_ln) "
         f"{np.median(js / pred):.3f}")
+
+# The safeguards of Section 3.2, counted on the raw signals of the same voxels.
+dwi = np.asarray(nib.load(src / "processed" / "dwi_raw.nii.gz").dataobj, dtype=np.float32)
+X = dwi[wm].astype(np.float64)
+del dwi
+S0 = X[:, bvals < 50].mean(-1)
+ok = S0 > 0
+for b in (1500, 3000):
+    sh = np.abs(bvals - b) < 100
+    r = X[ok][:, sh] / S0[ok, None]
+    Sp = np.clip(r, 1e-2, 1.0)
+    D = -np.log(Sp) / bvals[sh].mean()
+    lnD = np.log(np.maximum(D, 1e-6))
+    jln = np.log(np.maximum(D.mean(-1), 1e-6)) - lnD.mean(-1)
+    jls = np.log(Sp.mean(-1)) - np.log(Sp).mean(-1)
+    say(f"example b={b} safeguards: {r.size} signals in {ok.sum()} voxels; "
+        f"S' > 1 {100 * (r > 1).mean():.3f}%, S' < 1e-2 {100 * (r < 1e-2).mean():.3f}%, "
+        f"D < 1e-6 {100 * (D < 1e-6).mean():.3f}%; gaps below zero J_ln {int((jln < 0).sum())}, "
+        f"J_lnS {int((jls < 0).sum())}")
 
 (OUT / "example_stats.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")

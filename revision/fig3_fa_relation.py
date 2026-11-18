@@ -1,4 +1,4 @@
-"""Figure 3: the gaps and the tensor metrics.
+"""Figure 4: the gaps and the tensor metrics.
 
 (a) J_ln against FA in the example participant's white matter, with the
 leading-order curve 2 FA^2/(15 - 10 FA^2) and the exact gap of prolate and

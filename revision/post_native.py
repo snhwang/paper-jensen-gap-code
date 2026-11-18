@@ -2,7 +2,7 @@
 
 1. Check that the pass reproduces the gap table (cr_gaps_long.csv).
 2. Across-participant Spearman correlation of each gap with FA, by region
-   (Figure 3c,d; written to out/fa_correlations.csv for fig3_fa_relation.py).
+   (Figure 4c,d; written to out/fa_correlations.csv for fig3_fa_relation.py).
 3. Age effects not explained by the tensor and noise (Section 4.6, Table S4):
    the region mean of (measured gap - simulated gap of tensor plus noise),
    correlated with age, also without the noise term and with the b=0 noise
@@ -195,6 +195,10 @@ say(f"  Delta_b: raw r {q.dB_raw.min():+.2f}..{q.dB_raw.max():+.2f}, noise-corre
 say("\nSummary numbers")
 say(f"  ADC_1 / tensor MD, median over sessions, regions and shells: "
     f"{(d.ADC_1 / d.MD).median():.3f}")
+for b in (1500, 3000):
+    q = (d.ADC_1 / d.MD)[d.shell_bval == b]
+    say(f"  ADC_1 / tensor MD at b={b}: median {q.median():.3f}, 5th to 95th percentile "
+        f"{q.quantile(0.05):.3f} to {q.quantile(0.95):.3f}, within 1% in {(abs(q - 1) <= 0.01).mean():.0%}")
 for b in (1500, 3000):
     s = d[(d.ROI == "CR_all") & (d.shell_bval == b)]
     say(f"  noise inflation, corona radiata b={b}: J_ln "

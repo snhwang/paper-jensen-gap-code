@@ -1,0 +1,60 @@
+native_pass.csv: 1354 sessions
+vs gap table: max relative difference J_ln 1.7e-05, J_lnS 5.1e-06; voxel counts equal 1.0000
+b=1500: rho(J_ln,FA) 0.83-0.98, rho(J_lnS,FA) 0.30-0.92, CR_all 0.972 / 0.371
+b=3000: rho(J_ln,FA) 0.90-0.98, rho(J_lnS,FA) 0.43-0.87, CR_all 0.969 / 0.435
+
+SNR (sh) vs age, partial r, CR_all: b=1500 +0.637 b=3000 +0.637
+
+tensor only (no noise)
+  J_ln  b=1500: excess  +7.5% (median over regions); age r -0.59..-0.04, CR_all -0.595; q<0.05: 15/16 (+0, -15); with SNR: CR_all -0.012, q<0.05 7/16
+  J_ln  b=3000: excess  +2.3% (median over regions); age r -0.54..+0.26, CR_all -0.540; q<0.05: 16/16 (+1, -15); with SNR: CR_all +0.004, q<0.05 10/16
+  J_lnS b=1500: excess  +4.0% (median over regions); age r -0.30..+0.52, CR_all -0.034; q<0.05: 10/16 (+5, -5); with SNR: CR_all +0.332, q<0.05 16/16
+  J_lnS b=3000: excess  -3.1% (median over regions); age r -0.41..+0.35, CR_all -0.187; q<0.05: 14/16 (+3, -11); with SNR: CR_all +0.191, q<0.05 11/16
+
+tensor + noise (DW residual)
+  J_ln  b=1500: excess  -2.6% (median over regions); age r -0.41..+0.44, CR_all -0.240; q<0.05: 12/16 (+4, -8); with SNR: CR_all -0.070, q<0.05 11/16
+  J_ln  b=3000: excess -12.1% (median over regions); age r -0.38..+0.54, CR_all -0.269; q<0.05: 12/16 (+5, -7); with SNR: CR_all -0.114, q<0.05 12/16
+  J_lnS b=1500: excess  -6.8% (median over regions); age r -0.47..+0.39, CR_all -0.223; q<0.05: 15/16 (+7, -8); with SNR: CR_all +0.008, q<0.05 13/16
+  J_lnS b=3000: excess -18.9% (median over regions); age r -0.50..+0.43, CR_all -0.412; q<0.05: 15/16 (+3, -12); with SNR: CR_all -0.096, q<0.05 8/16
+
+tensor + noise (b0 variance)
+  J_ln  b=1500: excess  -4.3% (median over regions); age r -0.38..+0.05, CR_all -0.181; q<0.05: 12/16 (+0, -12); with SNR: CR_all -0.111, q<0.05 14/16
+  J_ln  b=3000: excess -13.2% (median over regions); age r -0.45..+0.15, CR_all -0.333; q<0.05: 15/16 (+3, -12); with SNR: CR_all -0.178, q<0.05 14/16
+  J_lnS b=1500: excess -10.1% (median over regions); age r -0.60..+0.21, CR_all -0.450; q<0.05: 16/16 (+1, -15); with SNR: CR_all -0.155, q<0.05 15/16
+  J_lnS b=3000: excess -20.9% (median over regions); age r -0.60..-0.05, CR_all -0.534; q<0.05: 15/16 (+0, -15); with SNR: CR_all -0.206, q<0.05 13/16
+
+Dependence on b, partial r with age (sex) and (sex + SNR):
+                n  J_f_mean_r  J_f_mean_r_snr  delta_r  delta_r_snr
+ROI                                                                
+CR_all       1354      -0.593          -0.056    0.499        0.111
+ACR          1354      -0.589          -0.040    0.569        0.202
+SCR          1354      -0.545          -0.073    0.441        0.157
+PCR          1354      -0.484           0.040    0.242       -0.088
+Genu         1354      -0.409           0.023    0.467        0.072
+Body         1354      -0.182           0.181    0.295       -0.105
+Splenium     1354      -0.183           0.108    0.358        0.085
+alic         1354      -0.412           0.080    0.381       -0.109
+plic         1354      -0.441          -0.140    0.507        0.339
+rlic         1354      -0.455           0.035    0.301       -0.004
+ec           1354      -0.419           0.135    0.358       -0.056
+slf          1354      -0.529          -0.028    0.426        0.081
+ptr          1354      -0.621          -0.124    0.549        0.084
+ss           1354      -0.517           0.118    0.410       -0.050
+cingulum_cc  1354      -0.537          -0.230    0.497        0.234
+tapetum      1354      -0.571          -0.099    0.545        0.162
+
+Noise-corrected age associations (DW-residual noise), CR_all:
+  b=1500: inflation 11.1%; J_ln -0.448 -> -0.377 (range -0.59..-0.15); J_lnS +0.282 -> +0.273; sign of J_lnS kept in 16/16
+  b=3000: inflation 16.2%; J_ln -0.408 -> -0.305 (range -0.54..-0.04); J_lnS +0.318 -> +0.244; sign of J_lnS kept in 15/16
+  Delta_b: raw r +0.24..+0.57, noise-corrected +0.29..+0.57 (CR_all +0.482); corrected shift -31% to -14%, lower at b=3000 in 98.7%-100.0% of participants
+
+Summary numbers
+  ADC_1 / tensor MD, median over sessions, regions and shells: 0.991
+  ADC_1 / tensor MD at b=1500: median 0.994, 5th to 95th percentile 0.980 to 0.998, within 1% in 81%
+  ADC_1 / tensor MD at b=3000: median 0.985, 5th to 95th percentile 0.957 to 0.994, within 1% in 23%
+  noise inflation, corona radiata b=1500: J_ln 11.1%, J_lnS 11.9%
+  noise inflation, corona radiata b=3000: J_ln 16.2%, J_lnS 17.2%
+  tensor+noise prediction exceeds the measured gap in 63 of 64 region x gap x shell cells
+  TN: J_ln b=1500 residual age r -0.41 to +0.44, median excess -2.6%
+  TNb0: J_ln b=1500 residual age r -0.38 to +0.05, median excess -4.3%
+  uncorrected (tensor only) J_ln b=1500 median excess +7.5%

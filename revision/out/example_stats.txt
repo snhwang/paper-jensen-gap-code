@@ -1,0 +1,6 @@
+direction set b=1500: 93 directions, eigenvalues of M 0.341, 0.334, 0.325; max deviation from 1/3 2.5%
+direction set b=3000: 92 directions, eigenvalues of M 0.341, 0.331, 0.329; max deviation from 1/3 2.2%
+example b=1500: white-matter voxels 30878; median ADC_0/ADC_1 0.948; median D_SM/ADC_1 0.954; Spearman J_ln~FA 0.994; Spearman J_lnS~(b MD)^2 J_ln 0.998; median J_lnS/((b MD)^2 J_ln) 0.906
+example b=3000: white-matter voxels 30878; median ADC_0/ADC_1 0.957; median D_SM/ADC_1 0.944; Spearman J_ln~FA 0.991; Spearman J_lnS~(b MD)^2 J_ln 0.999; median J_lnS/((b MD)^2 J_ln) 0.889
+example b=1500 safeguards: 2871654 signals in 30878 voxels; S' > 1 0.005%, S' < 1e-2 0.004%, D < 1e-6 0.005%; gaps below zero J_ln 0, J_lnS 0
+example b=3000 safeguards: 2840776 signals in 30878 voxels; S' > 1 0.000%, S' < 1e-2 0.003%, D < 1e-6 0.000%; gaps below zero J_ln 0, J_lnS 0
